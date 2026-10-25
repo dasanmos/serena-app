@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Serena — Instalar la app</title>
+<meta name="description" content="Instala Serena, la plataforma académica y de bienestar emocional del colegio.">
+<meta name="theme-color" content="#E8B923">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Serena">
+<meta name="application-name" content="Serena">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" href="iconos/favicon-32.png">
+<link rel="apple-touch-icon" href="iconos/apple-touch-icon.png">
+<style>
+  :root { --oro: #E8B923; --oro-osc: #8A6A00; --crema: #F5F3EC; --tinta: #2B2B2B; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; min-height: 100%; }
+  body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; background: radial-gradient(circle at 20% 0%, #FFF4CF, var(--crema) 55%);
+         color: var(--tinta); display: grid; place-items: center; min-height: 100vh; padding: 24px env(safe-area-inset-right) 24px env(safe-area-inset-left); text-align: center; }
+  .caja { max-width: 420px; width: 100%; }
+  .logo { width: 150px; height: auto; animation: latir 2.4s ease-in-out infinite; }
+  @keyframes latir { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.04); } }
+  h1 { font-family: Georgia, "Times New Roman", serif; font-size: 2rem; margin: 8px 0 4px; letter-spacing: .04em; }
+  p { line-height: 1.5; }
+  .sub { color: #6B6B6B; margin: 0 0 22px; }
+  .boton { display: block; width: 100%; padding: 15px 18px; border-radius: 14px; border: 0; font-size: 1.05rem; font-weight: 700; cursor: pointer;
+           text-decoration: none; margin: 10px 0; }
+  .principal { background: linear-gradient(135deg, #F9D976, var(--oro)); color: var(--tinta); box-shadow: 0 8px 20px rgba(232, 185, 35, .35); }
+  .secundario { background: #fff; color: var(--oro-osc); border: 2px solid #F0DFA6; }
+  .pasos { text-align: left; background: #fff; border-radius: 14px; padding: 14px 18px; font-size: .95rem; box-shadow: 0 4px 14px rgba(0,0,0,.06); }
+  .pasos ol { margin: 6px 0 0; padding-left: 20px; }
+  .cargando { display: inline-block; width: 22px; height: 22px; border: 3px solid #F0DFA6; border-top-color: var(--oro); border-radius: 50%; animation: girar .8s linear infinite; vertical-align: middle; }
+  @keyframes girar { to { transform: rotate(360deg); } }
+  [hidden] { display: none !important; }
+  small { color: #8a8a8a; }
+  @media (prefers-reduced-motion: reduce) { .logo, .cargando { animation: none; } }
+</style>
+</head>
+<body>
+<main class="caja">
+  <img class="logo" src="iconos/logo.png" alt="Serena">
+
+  <!-- Abriendo (cuando ya está instalada) -->
+  <section id="abriendo" hidden>
+    <p><span class="cargando" aria-hidden="true"></span> Abriendo Serena…</p>
+  </section>
+
+  <!-- Sin conexión -->
+  <section id="sin-red" hidden>
+    <h1>Sin conexión</h1>
+    <p class="sub">Serena necesita internet. Revisa tu conexión y vuelve a intentar.</p>
+    <button class="boton principal" type="button" onclick="location.reload()">Reintentar</button>
+  </section>
+
+  <!-- Página de instalación (abierta desde el navegador) -->
+  <section id="instalar" hidden>
+    <h1>Serena</h1>
+    <p class="sub">Bienestar emocional y gestión académica de tu colegio.<br>Instálala como una app en tu celular o computador.</p>
+
+    <button id="btn-instalar" class="boton principal" type="button" hidden>📲 Instalar Serena</button>
+
+    <div id="ayuda-ios" class="pasos" hidden>
+      <strong>En iPhone o iPad (Safari):</strong>
+      <ol>
+        <li>Toca el botón <strong>Compartir</strong> <span aria-hidden="true">⬆️</span>.</li>
+        <li>Elige <strong>Agregar a inicio</strong>.</li>
+        <li>Toca <strong>Agregar</strong>. Serena aparecerá en tu pantalla de inicio.</li>
+      </ol>
+    </div>
+
+    <div id="ayuda-otros" class="pasos" hidden>
+      <strong>Para instalarla:</strong>
+      <ol>
+        <li>Abre esta página en <strong>Chrome</strong> o <strong>Edge</strong>.</li>
+        <li>Abre el menú <strong>⋮</strong> y elige <strong>Instalar app</strong> o <strong>Agregar a la pantalla principal</strong>.</li>
+      </ol>
+    </div>
+
+    <p id="ya-instalada" hidden>✅ ¡Listo! Busca el ícono de <strong>Serena</strong> en tu pantalla de inicio.</p>
+
+    <a id="btn-abrir" class="boton secundario" href="#">Abrir Serena en el navegador</a>
+    <small>Serena — INEM José Félix de Restrepo · SENA</small>
+  </section>
+</main>
+
+<script>
+(function () {
+  'use strict';
+  // Dirección real de Serena. Si cambias de hosting o de dominio, cambia SOLO esta línea.
+  var SERENA = 'https://serena.infinityfreeapp.com/public/';
+
+  // Enlaces directos opcionales: ?ir=/public/estudiante/emociones.php (solo rutas de Serena).
+  var params = new URLSearchParams(location.search);
+  var ir = params.get('ir') || '';
+  var destino = /^\/public\/[A-Za-z0-9_\-\/.]*(\?[A-Za-z0-9_=&\-.%]*)?$/.test(ir) ? SERENA.replace(/\/public\/$/, '') + ir : SERENA;
+  document.getElementById('btn-abrir').href = destino;
+
+  var instalada = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true || params.get('app') === '1';
+  var esIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  var mostrar = function (id) { document.getElementById(id).hidden = false; };
+
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js').catch(function () { /* sin service worker: igual funciona como enlace */ });
+  }
+
+  if (instalada) {
+    // Abierta desde el ícono: va directo a Serena.
+    if (!navigator.onLine) { mostrar('sin-red'); return; }
+    mostrar('abriendo');
+    setTimeout(function () { location.replace(destino); }, 350);
+    return;
+  }
+
+  // Abierta en el navegador: página para instalar.
+  mostrar('instalar');
+  var avisoInstalar = null;
+  window.addEventListener('beforeinstallprompt', function (e) {
+    e.preventDefault();
+    avisoInstalar = e;
+    document.getElementById('ayuda-otros').hidden = true;
+    mostrar('btn-instalar');
+  });
+  document.getElementById('btn-instalar').addEventListener('click', function () {
+    if (!avisoInstalar) { return; }
+    avisoInstalar.prompt();
+    avisoInstalar.userChoice.finally(function () { avisoInstalar = null; document.getElementById('btn-instalar').hidden = true; });
+  });
+  window.addEventListener('appinstalled', function () {
+    document.getElementById('btn-instalar').hidden = true;
+    document.getElementById('ayuda-otros').hidden = true;
+    mostrar('ya-instalada');
+  });
+  if (esIOS) {
+    mostrar('ayuda-ios');
+  } else {
+    // Si en 2 s el navegador no ofreció instalar, se muestran los pasos manuales.
+    setTimeout(function () { if (!avisoInstalar) { mostrar('ayuda-otros'); } }, 2000);
+  }
+})();
+</script>
+</body>
+</html>
